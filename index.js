@@ -22,7 +22,7 @@ const defaultTokenSymbol = 'MATIC';
 const chain = 'polygon';
 const chainId = 137;
 
-const amount = 1.8;
+const amount = 1;
 
 const contractAddress = '0x6352a56caadc4f1e25cd6c75970fa768a3304e64';
 
@@ -32,9 +32,7 @@ const defaultGasPrice = 37;
 
 const slippage = 10;
 
-const profit = 6;
-
-const customTokensInclude = true;
+const profit = 4;
 
 const DEBUG = false;
 
@@ -137,30 +135,16 @@ async function main() {
 
 	let tokens = [];
 
-	try {
-		const tokensResponse = await axios.get('https://open-api.openocean.finance/v3/' + chain + '/tokenList');
-	
-		tokens = tokensResponse.data.data;
-	} catch (e) {
-		const tokensResponse = {
-			'data': {
-				'code': 500
-			}
-		};
-	}
-
 	let customTokensCount = 0;
 
-	if (customTokensInclude) {
-		while (customTokensCount <= customTokens.tokens.length && 2000 >= customTokensCount) {
-			const item = customTokens.tokens[customTokensCount] || {};
+	while (customTokensCount <= customTokens.tokens.length) {
+		const item = customTokens.tokens[customTokensCount] || {};
 
-			if (item && item.tags && item.tags.includes('swapable')) {
-				tokens.push(item);				
-			}
-
-			customTokensCount++;
+		if (item && item.tags && item.tags.includes('swapable')) {
+			tokens.push(item);				
 		}
+
+		customTokensCount++;
 	}
 
 	let tokensCount = 0;
@@ -336,11 +320,11 @@ async function main() {
 
 									        	const approveReceipt = await getBuyedResponse.wait();
 
-	    										if (approveReceipt.status === 0) {
+	    										if (approveReceipt.status === 1) {
+									        		console.log('Transaction (Bought) hash is ', getBuyedResponse.hash);
+									        	} else {
 									        		buySend = false;
 									        	}
-
-									        	console.log('Transaction (Bought) hash is ', getBuyedResponse.hash);
 								        	}
 								        } catch (e) {
 								        	buySend = false;
@@ -392,10 +376,10 @@ async function main() {
 
 												        	const approveReceipt = await getSoldResponse.wait();
 
-												        	if (approveReceipt.status === 0) {
-												        		sellSend = false;
-												        	} else {
+												        	if (approveReceipt.status === 1) {
 												        		console.log('Transaction (Sold) hash is ', getSoldResponse.hash);
+												        	} else {
+												        		sellSend = false;
 												        	}
 											        	}											        	
 											        } catch (e) {
@@ -442,9 +426,7 @@ async function main() {
 
 															        	const approveReceipt2 = await getSoldResponse2.wait();
 
-															        	if (approveReceipt2.status === 0) {
-															        		sellSend = false;
-															        	} else {
+															        	if (approveReceipt2.status === 1) {
 															        		console.log('Transaction (Sold) hash is ', getSoldResponse2.hash);
 
 															        		const contractCheckTokenBalance2 = new ethers.Contract(item.address, erc20CheckBalanceAndTransfer, walletSigner);
@@ -477,14 +459,16 @@ async function main() {
 
 																			        	const approveReceipt3 = await getSoldResponse3.wait();
 
-																			        	if (approveReceipt3.status === 0) {
-																			        		sellSend = false;
-																			        	} else {
+																			        	if (approveReceipt3.status === 1) {
 																			        		console.log('Transaction (Sold) hash is ', getSoldResponse3.hash);
+																			        	} else {
+																			        		sellSend = false;
 																			        	}
 																			        } catch (e) {}
 																			    }
 																		    });
+															        	} else {
+															        		sellSend = false;
 															        	}
 															        } catch (e) {
 															        	sellSend = false;
