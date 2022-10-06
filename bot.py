@@ -179,7 +179,7 @@ def perform_triangular_arbitrage(scrip1, scrip2, scrip3, arbitrage_type,initial_
 		print(f"PROFIT-{datetime.now().strftime('%H:%M:%S')}:"\
 			  f"{arbitrage_type}, {scrip1},{scrip2},{scrip3}, Profit/Loss: {round(final_price-initial_investment,3)} ")
 		
-		#place_trade_orders(arbitrage_type, scrip1, scrip2, scrip3, initial_investment, scrip_prices)
+		place_trade_orders(arbitrage_type, scrip1, scrip2, scrip3, initial_investment, scrip_prices)
 
 while(True):
 	balances = exchange.fetch_balance()
