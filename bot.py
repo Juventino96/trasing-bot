@@ -16,6 +16,9 @@ exchange.options['defaultType'] = 'spot';
 markets = exchange.fetchMarkets()
 market_symbols = [market['symbol'] for market in markets]
 
+print f'No. of market symbols: {len(market_symbols)}'
+print f'Sample:{market_symbols[0:5]}'
+
 def percentage(percent, whole):
   return (percent * whole) / 100.0
 
@@ -47,7 +50,7 @@ def get_crypto_combinations(market_symbols, base):
 
 combinations = get_crypto_combinations(market_symbols, 'USDT')
 
-print(f'No. of crypto combinations: {len(combinations)}')
+print f'No. of crypto combinations: {len(combinations)}'
 
 def fetch_current_ticker_price(ticker):
     current_ticker_details = exchange.fetch_ticker(ticker)
@@ -170,11 +173,9 @@ def perform_triangular_arbitrage(scrip1, scrip2, scrip3, arbitrage_type,initial_
         
     profit_loss = check_profit_loss(final_price,initial_investment, transaction_brokerage, min_profit)
 
-    print(scrip1, scrip2, scrip3, profit_loss)
-
     if profit_loss > 0:
-        print(f"PROFIT-{datetime.now().strftime('%H:%M:%S')}:"\
-              f"{arbitrage_type}, {scrip1},{scrip2},{scrip3}, Profit/Loss: {round(final_price-initial_investment,3)} ")
+        print f"PROFIT-{datetime.now().strftime('%H:%M:%S')}:"\
+              f"{arbitrage_type}, {scrip1},{scrip2},{scrip3}, Profit/Loss: {round(final_price-initial_investment,3)} "
         
         #place_trade_orders(arbitrage_type, scrip1, scrip2, scrip3, initial_investment, scrip_prices)
 
