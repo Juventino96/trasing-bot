@@ -11,13 +11,13 @@ exchange = ccxt.bybit({
     "secret": "9UytrjConuvaRHeAvbiLT1ZTtYU40HjJhuWc"
 })
 
-exchange.options['defaultType'] = 'spot';
+exchange.options["defaultType"] = "spot";
 
 markets = exchange.fetchMarkets()
-market_symbols = [market['symbol'] for market in markets]
+market_symbols = [market["symbol"] for market in markets]
 
-print(f'No. of market symbols: {len(market_symbols)}')
-print(f'Sample:{market_symbols[0:5]}')
+print(f"No. of market symbols: {len(market_symbols)}")
+print(f"Sample:{market_symbols[0:5]}")
 
 def percentage(percent, whole):
   return (percent * whole) / 100.0
@@ -26,35 +26,35 @@ def get_crypto_combinations(market_symbols, base):
     combinations = []
     for sym1 in market_symbols:
         
-        sym1_token1 = sym1.split('/')[0]
-        sym1_token2 = sym1.split('/')[1]
+        sym1_token1 = sym1.split("/")[0]
+        sym1_token2 = sym1.split("/")[1]
         
         if (sym1_token2 == base):
             for sym2 in market_symbols:
-                sym2_token1 = sym2.split('/')[0]
-                sym2_token2 = sym2.split('/')[1]
+                sym2_token1 = sym2.split("/")[0]
+                sym2_token2 = sym2.split("/")[1]
                 if (sym1_token1 == sym2_token2):
                     for sym3 in market_symbols:
-                        sym3_token1 = sym3.split('/')[0]
-                        sym3_token2 = sym3.split('/')[1]
+                        sym3_token1 = sym3.split("/")[0]
+                        sym3_token2 = sym3.split("/")[1]
                         if((sym2_token1 == sym3_token1) and (sym3_token2 == sym1_token2)):
                             combination = {
-                                'base':sym1_token2,
-                                'intermediate':sym1_token1,
-                                'ticker':sym2_token1,
+                                "base":sym1_token2,
+                                "intermediate":sym1_token1,
+                                "ticker":sym2_token1,
                             }
                             combinations.append(combination)
                 
 
     return combinations
 
-combinations = get_crypto_combinations(market_symbols, 'USDT')
+combinations = get_crypto_combinations(market_symbols, "USDT")
 
-print(f'No. of crypto combinations: {len(combinations)}')
+print(f"No. of crypto combinations: {len(combinations)}")
 
 def fetch_current_ticker_price(ticker):
     current_ticker_details = exchange.fetch_ticker(ticker)
-    ticker_price = current_ticker_details['close'] if current_ticker_details is not None else None
+    ticker_price = current_ticker_details["close"] if current_ticker_details is not None else None
     return ticker_price
 
 def check_if_float_zero(value):
@@ -136,7 +136,7 @@ def place_sell_order(scrip, quantity, limit):
 
 def place_trade_orders(type, scrip1, scrip2, scrip3, initial_amount, scrip_prices):
     final_amount = 0.0
-    if type == 'BUY_BUY_SELL':
+    if type == "BUY_BUY_SELL":
         s1_quantity = initial_amount/scrip_prices[scrip1]
         place_buy_order(scrip1, s1_quantity, scrip_prices[scrip1])
         
@@ -146,7 +146,7 @@ def place_trade_orders(type, scrip1, scrip2, scrip3, initial_amount, scrip_price
         s3_quantity = s2_quantity
         place_sell_order(scrip3, s3_quantity, scrip_prices[scrip3])
         
-    elif type == 'BUY_SELL_SELL':
+    elif type == "BUY_SELL_SELL":
         s1_quantity = initial_amount/scrip_prices[scrip1]
         place_buy_order(scrip1, s1_quantity, scrip_prices[scrip1])
         
@@ -163,11 +163,11 @@ def perform_triangular_arbitrage(scrip1, scrip2, scrip3, arbitrage_type,initial_
                                transaction_brokerage, min_profit):
     final_price = 0.0
 
-    if(arbitrage_type == 'BUY_BUY_SELL'):
+    if(arbitrage_type == "BUY_BUY_SELL"):
         # Check this combination for triangular arbitrage: scrip1 - BUY, scrip2 - BUY, scrip3 - SELL
         final_price, scrip_prices = check_buy_buy_sell(scrip1, scrip2, scrip3,initial_investment)
         
-    elif(arbitrage_type == 'BUY_SELL_SELL'):
+    elif(arbitrage_type == "BUY_SELL_SELL"):
         # Check this combination for triangular arbitrage: scrip1 - BUY, scrip2 - SELL, scrip3 - SELL
         final_price, scrip_prices = check_buy_sell_sell(scrip1, scrip2, scrip3,initial_investment)
         
@@ -176,7 +176,7 @@ def perform_triangular_arbitrage(scrip1, scrip2, scrip3, arbitrage_type,initial_
     print(scrip1, scrip2, scrip3, profit_loss)
 
     if profit_loss > 0:
-        print(f"PROFIT-{datetime.now().strftime('%H:%M:%S')}:"\
+        print(f"PROFIT-{datetime.now().strftime("%H:%M:%S")}:"\
               f"{arbitrage_type}, {scrip1},{scrip2},{scrip3}, Profit/Loss: {round(final_price-initial_investment,3)} ")
         
         #place_trade_orders(arbitrage_type, scrip1, scrip2, scrip3, initial_investment, scrip_prices)
@@ -184,27 +184,27 @@ def perform_triangular_arbitrage(scrip1, scrip2, scrip3, arbitrage_type,initial_
 while(True):
     balances = exchange.fetch_balance()
     
-    INVESTMENT_AMOUNT_DOLLARS = balances['USDT']['free']
+    INVESTMENT_AMOUNT_DOLLARS = balances["USDT"]["free"]
     MIN_PROFIT_DOLLARS = percentage(0.55, INVESTMENT_AMOUNT_DOLLARS)
 
     time.sleep(1)
 
     for combination in combinations:
-        base = combination['base']
-        intermediate = combination['intermediate']
-        ticker = combination['ticker']
+        base = combination["base"]
+        intermediate = combination["intermediate"]
+        ticker = combination["ticker"]
 
 
-        s1 = f'{intermediate}/{base}'    # Eg: BTC/USDT
-        s2 = f'{ticker}/{intermediate}'  # Eg: ETH/BTC
-        s3 = f'{ticker}/{base}'          # Eg: ETH/USDT 
+        s1 = f"{intermediate}/{base}"    # Eg: BTC/USDT
+        s2 = f"{ticker}/{intermediate}"  # Eg: ETH/BTC
+        s3 = f"{ticker}/{base}"          # Eg: ETH/USDT 
 
         # Check triangular arbitrage for buy-buy-sell 
-        perform_triangular_arbitrage(s1,s2,s3,'BUY_BUY_SELL',INVESTMENT_AMOUNT_DOLLARS,
+        perform_triangular_arbitrage(s1,s2,s3,"BUY_BUY_SELL",INVESTMENT_AMOUNT_DOLLARS,
                                   BROKERAGE_PER_TRANSACTION_PERCENT, MIN_PROFIT_DOLLARS)
         # Sleep to avoid rate limit on api calls (RateLimitExceeded exception)
         time.sleep(1) 
         # Check triangular arbitrage for buy-sell-sell 
-        perform_triangular_arbitrage(s3,s2,s1,'BUY_SELL_SELL',INVESTMENT_AMOUNT_DOLLARS,
+        perform_triangular_arbitrage(s3,s2,s1,"BUY_SELL_SELL",INVESTMENT_AMOUNT_DOLLARS,
                                   BROKERAGE_PER_TRANSACTION_PERCENT, MIN_PROFIT_DOLLARS)
         time.sleep(1)
